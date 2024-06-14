@@ -1,0 +1,226 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Breeding Arena College - Assignment Marking</title>
+<style>
+     body {
+        font-family: Arial, sans-serif;
+        background-color: #f0f0f0;
+        margin: 0;
+        padding: 0;
+    }
+    header {
+        background-color: #006400; /* Dark green */
+        color: #fff;
+        padding: 10px;
+        text-align: center;
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+    }
+    header img {
+        height: 50px;
+    }
+    .content {
+        max-width: 1200px;
+        margin: 20px auto;
+        padding: 20px;
+        background-color: #fff;
+        border-radius: 8px;
+        box-shadow: 0px 2px 5px rgba(0, 0, 0, 0.1);
+        display: flex;
+        gap: 20px;
+        flex-direction: column; /* Change to column */
+        align-items: center; /* Center items horizontally */
+    }
+    .sample-submission, .plagiarism-checker {
+        width: 100%; /* Full width */
+        padding: 20px;
+        background-color: #fff;
+        border-radius: 8px;
+        box-shadow: 0px 2px 5px rgba(0, 0, 0, 0.1);
+    }
+    .sample-submission h2, .plagiarism-checker h2 {
+        background-color: #32CD32; /* Lime green */
+        color: #fff;
+        padding: 10px;
+        border-radius: 5px;
+        text-align: center;
+    }
+    .form-group {
+        margin-bottom: 10px;
+    }
+    .form-group textarea {
+        height: calc(50% - 20px);
+        width: 100%;
+        padding: 10px;
+        border: 1px solid #ccc;
+        border-radius: 5px;
+        background-color: #fafafa;
+        box-sizing: border-box; /* Include padding and border in the element's total width and height */
+    }
+    .form-group input[type="file"] {
+        width: 100%;
+        padding: 10px;
+        border: 1px solid #ccc;
+        border-radius: 5px;
+        background-color: #fafafa;
+        box-sizing: border-box; /* Include padding and border in the element's total width and height */
+    }
+    button {
+        padding: 10px 20px;
+        background-color: #32CD32; /* Lime green */
+        color: #fff;
+        border: none;
+        border-radius: 5px;
+        cursor: pointer;
+        margin-top: 10px;
+    }
+    #result {
+        margin-top: 10px;
+        font-size: 40px; /* Large font size */
+        text-align: center;
+        font-weight: bold; /* Bold font */
+    }
+    .plagiarism-level {
+        font-size: 14px; /* Small font size */
+        text-align: center;
+    }
+    /* Popup container - can be anything you want */
+    .popup {
+        position: fixed;
+        bottom: 0;
+        right: 0;
+        background-color: #fff;
+        border: 1px solid #ccc;
+        border-radius: 8px;
+        box-shadow: 0px 2px 5px rgba(0, 0, 0, 0.1);
+        width: 300px;
+        padding: 20px;
+        display: none;
+        z-index: 1000;
+    }
+    .popup h2 {
+        text-align: center;
+        background-color: #32CD32; /* Lime green */
+        color: #fff;
+        padding: 10px;
+        border-radius: 5px;
+    }
+    .popup input {
+        width: 100%;
+        padding: 10px;
+        border: 1px solid #ccc;
+        border-radius: 5px;
+        box-sizing: border-box; /* Include padding and border in the element's total width and height */
+    }
+</style>
+</head>
+<body>
+<header>
+    <img src="/mnt/data/logo-img2.png" alt="Breeding Arena College Logo">
+    <h1>Breeding Arena College</h1>
+</header>
+<div class="content">
+    <div class="sample-submission">
+        <h2>Sample Submission</h2>
+        <p id="sampleText">This is a test, create a text file that has some similarities to this file and upload it, or one that does not have similarities. Good Luck ;D</p>
+        <button onclick="transferText()">Transfer to Plagiarism Checker</button>
+    </div>
+    <div class="plagiarism-checker">
+        <h2>Plagiarism Checker</h2>
+        <div class="form-group">
+            <label for="submission" style="display:block; text-align:center;">Submission:</label>
+            <textarea id="submission" placeholder="Submission will be transferred here..." readonly></textarea>
+        </div>
+        <div class="form-group">
+            <label for="notes" style="display:block; text-align:center;">Your Notes:</label>
+            <input type="file" id="notes" accept=".txt, .html, .css, .js">
+        </div>
+        <button onclick="checkPlagiarism()">Check Plagiarism</button>
+        <div id="plagiarism-info">
+            <div id="plagiarism-percentage" style="font-size: 24px; font-weight: bold; text-align: center;"></div>
+            <div class="plagiarism-level" style="font-size: 14px; text-align: center;"></div>
+        </div>
+    </div>
+</div>
+<div class="popup" id="popup">
+    <h2>What question did you put?</h2>
+    <input type="text" id="question" placeholder="Enter your question">
+    <button onclick="submitQuestion()">Submit</button>
+</div>
+<script>
+    function transferText() {
+        const sampleText = document.getElementById('sampleText').innerText;
+        document.getElementById('submission').value = sampleText;
+    }
+
+    function openPopup() {
+        document.getElementById('popup').style.display = 'block';
+    }
+
+    function submitQuestion() {
+        const question = document.getElementById('question').value;
+        // Here you can process the submitted question and show the result below
+    }
+
+    function checkPlagiarism() {
+        const fileInput = document.getElementById('notes');
+        const submissionText = document.getElementById('submission').value;
+
+        if (fileInput.files.length === 0) {
+            alert('Please upload a file to check plagiarism.');
+            return;
+        }
+
+        const file = fileInput.files[0];
+        const reader = new FileReader();
+
+        reader.onload = function(e) {
+            const fileText = e.target.result;
+            const similarityPercentage = calculateSimilarity(submissionText, fileText);
+            displayPercentage(similarityPercentage);
+        };
+
+        reader.readAsText(file);
+    }
+
+    function calculateSimilarity(text1, text2) {
+        // Implement a basic similarity check (e.g., checking for common words or sentences)
+        const words1 = text1.split(/\s+/);
+        const words2 = text2.split(/\s+/);
+
+        const commonWords = words1.filter(word => words2.includes(word)).length;
+        const totalWords = Math.max(words1.length, words2.length);
+
+        return (commonWords / totalWords) * 100;
+    }
+
+    function displayPercentage(percentage) {
+        let currentPercentage = 0;
+        const interval = setInterval(() => {
+            document.getElementById('plagiarism-percentage').innerText = `Plagiarism Percentage: ${currentPercentage.toFixed(2)}%`;
+            if (currentPercentage >= percentage) {
+                clearInterval(interval);
+                showPlagiarismLevel(currentPercentage);
+            }
+            currentPercentage += 0.5;
+        }, 50);
+    }
+
+    function showPlagiarismLevel(percentage) {
+        let level = '';
+        if (percentage < 30) {
+            level = 'Moderate';
+        } else if (percentage >= 30 && percentage < 70) {
+            level = 'Ok';
+        } else {
+            level = 'Concerning';
+        }
+        document.querySelector('.plagiarism-level').innerText = level.toUpperCase();
+    }
+</script>
+</body>
+</html>
